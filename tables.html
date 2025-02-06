@@ -50,19 +50,19 @@
                     row.textContent.includes(searchTerm)
                 );
 
-                // Add a class based on URL index
-                rows.forEach(row => row.classList.add(index === 0 ? "from-url-1" : "from-url-2"));
+                // Process each row
+                rows.forEach(row => {
+                    // Remove the 2nd column
+                    const columns = row.querySelectorAll("td");
+                    if (columns.length > 1) columns[1].remove();
 
-                // Push rows into allRows array
-                allRows.push(...rows);
+                    // Store the row with an index for coloring
+                    allRows.push({ element: row, urlIndex: index });
+                });
             }
 
             // Sort rows by time (3rd <td> which contains <time>)
-            allRows.sort((rowA, rowB) => {
-                const timeA = getTimeFromRow(rowA);
-                const timeB = getTimeFromRow(rowB);
-                return timeA - timeB;
-            });
+            allRows.sort((a, b) => getTimeFromRow(a.element) - getTimeFromRow(b.element));
 
             // Display the results
             displayResults(allRows);
@@ -94,20 +94,21 @@
             return;
         }
 
-        // Create a new table with sorted & merged rows, removing the 2nd column
-        const tableHTML = `
-            <table class="table table-bordered">
-                <tbody>
-                    ${rows.map(row => {
-                        const columns = row.querySelectorAll("td");
-                        if (columns.length > 1) columns[1].remove(); // Remove 2nd column
-                        return row.outerHTML;
-                    }).join("")}
-                </tbody>
-            </table>
-        `;
+        // Create table structure
+        const table = document.createElement("table");
+        table.className = "table table-bordered";
 
-        resultsContainer.innerHTML = tableHTML;
+        const tbody = document.createElement("tbody");
+
+        // Append sorted rows and apply background color
+        rows.forEach(({ element, urlIndex }) => {
+            element.classList.add(urlIndex === 0 ? "from-url-1" : "from-url-2");
+            tbody.appendChild(element);
+        });
+
+        table.appendChild(tbody);
+        resultsContainer.innerHTML = ""; // Clear previous content
+        resultsContainer.appendChild(table);
     }
     </script>
 
