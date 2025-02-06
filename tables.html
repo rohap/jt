@@ -4,7 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Merged & Sorted Table</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script>
+        var removeAttr = jQuery.fn.removeAttr;
+        jQuery.fn.removeAttr = function() {
+            if (!arguments.length) {
+                this.each(function() {
+                    // Looping attributes array in reverse direction to avoid skipping items
+                    for (var i = this.attributes.length - 1; i >= 0; i--) {
+                        jQuery(this).removeAttr(this.attributes[i].name);
+                    }
+                });
+                return this;
+            }
+            return removeAttr.apply(this, arguments);
+        };
+    </script>
 </head>
 <body class="container mt-4">
 
@@ -24,53 +40,53 @@
     const searchTerm = "Vision, Beer Sheva";
 
     async function fetchAndMergeTables() {
-        try {
-            let allRows = [];
+    try {
+        let allRows = [];
+        let rowSource = 0; // Variable to keep track of which URL the rows come from
 
-            // Fetch data from both URLs
-            for (let index = 0; index < urls.length; index++) {
-                const url = urls[index];
-                const response = await fetch(url);
-                const htmlText = await response.text();
+        // Fetch data from both URLs
+        for (const url of urls) {
+            const response = await fetch(url);
+            const htmlText = await response.text();
 
-                // Parse the HTML
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(htmlText, "text/html");
+            // Parse the HTML
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, "text/html");
 
-                // Find the first table (adjust selector if needed)
-                const table = doc.querySelector("table");
-                if (!table) continue;
+            // Find the first table (adjust selector if needed)
+            const table = doc.querySelector("table");
+            if (!table) continue;
 
-                // Filter rows
-                const rows = Array.from(table.querySelectorAll("tr")).filter(row => 
-                    row.textContent.includes(searchTerm)
-                );
+            // Filter rows
+            const rows = Array.from(table.querySelectorAll("tr")).filter(row => 
+                row.textContent.includes(searchTerm)
+            );
 
-                // Process each row
-                rows.forEach(row => {
-                    // Remove the 2nd column
-                    const columns = row.querySelectorAll("td");
-                    if (columns.length > 1) columns[1].remove();
+            // Add rows to allRows array and mark rows from the second URL
+            rows.forEach((row, index) => {
+                if (rowSource === 1) {
+                    row.className = "table-primary"; // Replace current classes with "table-primary" for rows from the second URL
+                }
+                allRows.push(row);
+            });
 
-                    // Apply background color directly
-                    let classColor = index === 0 ? "bg-primary" : "bg-success";
-                    row.classList.add(classColor);
-
-                    // Store the row with an index for sorting
-                    allRows.push({ element: row, time: getTimeFromRow(row) });
-                });
-            }
-
-            // Sort rows by time (3rd <td> which contains <time>)
-            allRows.sort((a, b) => a.time - b.time);
-
-            // Display the results
-            displayResults(allRows);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            document.getElementById("filtered-results").innerHTML = `<p>Error fetching data.</p>`;
+            rowSource++; // Increment to mark the next URL's rows
         }
+
+        // Sort rows by time (3rd <td> which contains <time>)
+        allRows.sort((rowA, rowB) => {
+            const timeA = getTimeFromRow(rowA);
+            const timeB = getTimeFromRow(rowB);
+            return timeA - timeB;
+        });
+
+        // Display the results
+        displayResults(allRows);
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        document.getElementById("filtered-results").innerHTML = `<p>Error fetching data.</p>`;
     }
+}
 
     function getTimeFromRow(row) {
         const columns = row.querySelectorAll("td");
@@ -94,20 +110,35 @@
             return;
         }
 
-        // Create table structure
-        const table = document.createElement("table");
-        table.className = "table table-bordered";
+        // Create a new table with sorted & merged rows
+        const tableHTML = `
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Start</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Studio</th>
+                        <th scope="col">Group Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rows.map(row => row.outerHTML).join("")}
+                </tbody>
+            </table>
+        `;
 
-        const tbody = document.createElement("tbody");
+        resultsContainer.innerHTML = tableHTML;
 
-        // Append sorted rows
-        rows.forEach(({ element }) => {
-            tbody.appendChild(element);
+        // Remove the second column and all attributes from rows and cells
+        $("table tbody tr").each(function() {
+            $(this).find("td:nth-child(2)").remove(); // Remove the second <td> in each row
+            //$(this).removeAttr(); // Remove all attributes from the <tr> element
         });
 
-        table.appendChild(tbody);
-        resultsContainer.innerHTML = ""; // Clear previous content
-        resultsContainer.appendChild(table);
+        $("table tbody td").each(function() {
+            $(this).removeAttr(); // Remove all attributes from <td> elements
+        });
     }
     </script>
 
