@@ -53,7 +53,8 @@
                     if (columns.length > 1) columns[1].remove();
 
                     // Apply background color directly
-                    row.style.backgroundColor = index === 0 ? "#d0ebff !important" : "#ffc9c9 !important"; // Light Blue / Light Red
+                    let classColor = index === 0 ? "bg-primary" : "bg-success";
+                    row.classList.add(classColor);
 
                     // Store the row with an index for sorting
                     allRows.push({ element: row, time: getTimeFromRow(row) });
