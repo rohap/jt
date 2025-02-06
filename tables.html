@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merged & Sorted Table</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="container mt-4">
+
+    <h2>Filtered & Sorted Table</h2>
+    <button onclick="fetchAndMergeTables()" class="btn btn-primary">Fetch Data</button>
+
+    <div id="filtered-results" class="mt-4">
+        <p>Click "Fetch Data" to load results.</p>
+    </div>
+
+    <script>
+    // Constants: Two URLs to fetch data from
+    const urls = [
+        "https://contaste.pro/eng/85724?schedule&part=109605", // Replace with actual URL 1
+        "https://contaste.pro/eng/85724?schedule&part=109606"  // Replace with actual URL 2
+    ];
+    const searchTerm = "Vision, Beer Sheva";
+
+    async function fetchAndMergeTables() {
+        try {
+            let allRows = [];
+
+            // Fetch data from both URLs
+            for (const url of urls) {
+                const response = await fetch(url);
+                const htmlText = await response.text();
+
+                // Parse the HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlText, "text/html");
+
+                // Find the first table (adjust selector if needed)
+                const table = doc.querySelector("table");
+                if (!table) continue;
+
+                // Filter rows
+                const rows = Array.from(table.querySelectorAll("tr")).filter(row => 
+                    row.textContent.includes(searchTerm)
+                );
+
+                // Push rows into allRows array
+                allRows.push(...rows);
+            }
+
+            // Sort rows by time (3rd <td> which contains <time>)
+            allRows.sort((rowA, rowB) => {
+                const timeA = getTimeFromRow(rowA);
+                const timeB = getTimeFromRow(rowB);
+                return timeA - timeB;
+            });
+
+            // Display the results
+            displayResults(allRows);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            document.getElementById("filtered-results").innerHTML = `<p>Error fetching data.</p>`;
+        }
+    }
+
+    function getTimeFromRow(row) {
+        const columns = row.querySelectorAll("td");
+        if (columns.length < 3) return 0; // Ensure there's a 3rd column
+
+        const timeElement = columns[2].querySelector("time"); // Extract <time> element
+        if (!timeElement) return 0; // Fallback if no <time> tag is found
+
+        const timeText = timeElement.textContent.trim();
+        const [hours, minutes] = timeText.split(":").map(Number);
+        if (isNaN(hours) || isNaN(minutes)) return 0; // Fallback if time is invalid
+
+        return new Date(1970, 0, 1, hours, minutes).getTime(); // Convert to timestamp
+    }
+
+    function displayResults(rows) {
+        const resultsContainer = document.getElementById("filtered-results");
+
+        if (rows.length === 0) {
+            resultsContainer.innerHTML = "<p>No matching rows found.</p>";
+            return;
+        }
+
+        // Create a new table with sorted & merged rows
+        const tableHTML = `
+            <table class="table table-bordered">
+                <tbody>
+                    ${rows.map(row => row.outerHTML).join("")}
+                </tbody>
+            </table>
+        `;
+
+        resultsContainer.innerHTML = tableHTML;
+    }
+    </script>
+
+</body>
+</html>
