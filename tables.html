@@ -25,6 +25,7 @@
 <body class="container mt-4">
 
     <h2>Filtered & Sorted Table</h2>
+    <button onclick="fetchAndMergeTables()" class="btn btn-primary">Fetch Data</button>
 
     <div id="filtered-results" class="mt-4">
         <p>Click "Fetch Data" to load results.</p>
@@ -92,7 +93,10 @@
 }
 
     function getTimeFromRow(row) {
-        const timeElement = columns[1].querySelector("time"); // Extract <time> element
+        const columns = row.querySelectorAll("td");
+        if (columns.length < 3) return 0; // Ensure there's a 3rd column
+
+        const timeElement = columns[2].querySelector("time"); // Extract <time> element
         if (!timeElement) return 0; // Fallback if no <time> tag is found
 
         const timeText = timeElement.textContent.trim();
@@ -117,9 +121,9 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Start</th>
-                        <th scope="col">Style</th>
-                        <th scope="col">Performer</th>
+                        <th scope="col">Category</th>
                         <th scope="col">Studio</th>
+                        <th scope="col">Group Name</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -132,7 +136,7 @@
 
         // Remove the second column and all attributes from rows and cells
         $("table tbody tr").each(function() {
-            $(this).find("td:nth-child(1)").remove(); // Remove the second <td> in each row
+            //$(this).find("td:nth-child(2)").remove(); // Remove the second <td> in each row
             //$(this).removeAttr(); // Remove all attributes from the <tr> element
         });
 
@@ -140,9 +144,6 @@
             $(this).removeAttr(); // Remove all attributes from <td> elements
         });
     }
-    $(function () {
-        fetchAndMergeTables();
-    });
     </script>
 
 </body>
