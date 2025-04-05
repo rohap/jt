@@ -117,9 +117,9 @@
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Start</th>
-                        <th scope="col">Category</th>
+                        <th scope="col">Style</th>
+                        <th scope="col">Performer</th>
                         <th scope="col">Studio</th>
-                        <th scope="col">Group Name</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -132,7 +132,7 @@
 
         // Remove the second column and all attributes from rows and cells
         $("table tbody tr").each(function() {
-            //$(this).find("td:nth-child(2)").remove(); // Remove the second <td> in each row
+            $(this).find("td:nth-child(1)").remove(); // Remove the second <td> in each row
             //$(this).removeAttr(); // Remove all attributes from the <tr> element
         });
 
