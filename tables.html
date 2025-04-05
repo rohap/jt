@@ -92,10 +92,7 @@
 }
 
     function getTimeFromRow(row) {
-        const columns = row.querySelectorAll("td");
-        if (columns.length < 3) return 0; // Ensure there's a 3rd column
-
-        const timeElement = columns[2].querySelector("time"); // Extract <time> element
+        const timeElement = columns[1].querySelector("time"); // Extract <time> element
         if (!timeElement) return 0; // Fallback if no <time> tag is found
 
         const timeText = timeElement.textContent.trim();
@@ -135,7 +132,7 @@
 
         // Remove the second column and all attributes from rows and cells
         $("table tbody tr").each(function() {
-            $(this).find("td:nth-child(2)").remove(); // Remove the second <td> in each row
+            //$(this).find("td:nth-child(2)").remove(); // Remove the second <td> in each row
             //$(this).removeAttr(); // Remove all attributes from the <tr> element
         });
 
