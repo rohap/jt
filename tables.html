@@ -171,11 +171,45 @@
         $("table tbody td").each(function() {
             $(this).removeAttr(); // Remove all attributes from <td> elements
         });
+        addTableSearch();
+    }
+
+    function addTableSearch() {
+        const searchInput = document.getElementById("searchInput");
+        const clearBtn    = document.getElementById("clearSearch");
+        const table       = document.querySelector("#filtered-results table");
+    
+        if (!searchInput || !table) return;
+    
+        function filterTable() {
+            const filterValue = searchInput.value.trim().toLowerCase();
+            const rows = table.querySelectorAll("tbody tr");
+    
+            rows.forEach(row => {
+                const rowText = row.textContent.toLowerCase();
+                if (filterValue === "") {
+                    row.style.display = "";           // show all
+                } else {
+                    row.style.display = rowText.includes(filterValue) ? "": "none";
+                }
+            });
+        }
+    
+        searchInput.addEventListener("input", filterTable);
+        
+        clearBtn.addEventListener("click", () => {
+            searchInput.value = "";
+            filterTable();
+        });
+    
+        // Optional: trigger once on load (in case you want the default filter)
+        // filterTable();
     }
     </script>
 
 </body>
 </html>
+
 
 
 
