@@ -65,9 +65,16 @@
             if (!table) continue;
 
             // Filter rows
-            const rows = Array.from(table.querySelectorAll("tr")).filter(row => 
-                row.textContent.includes(searchTerm)
-            );
+            //const rows = Array.from(table.querySelectorAll("tr")).filter(row => 
+            //    row.textContent.includes(searchTerm)
+            //);
+
+            const rows = Array.from(table.querySelectorAll("tr")).filter(row => {
+                const text = row.textContent.toLowerCase();
+                return text.includes(searchTerm.toLowerCase()) || 
+                       text.includes("awards") || 
+                       text.includes("ceremony");
+            });
 
             // Add rows to allRows array and mark rows from the second URL
             rows.forEach((row, index) => {
@@ -155,6 +162,7 @@
 
 </body>
 </html>
+
 
 
 
