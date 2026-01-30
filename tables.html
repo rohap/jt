@@ -31,6 +31,13 @@
 <body class="container mt-4">
 
     <h2>Filtered & Sorted Table</h2>
+    <div class="mb-3">
+        <label for="searchInput" class="form-label">Search in table:</label>
+        <div class="input-group">
+            <input type="text" id="searchInput" class="form-control" placeholder="Type group, category, name, time..." autocomplete="off">
+            <button class="btn btn-outline-secondary" type="button" id="clearSearch">Clear</button>
+        </div>
+    </div>
     <button onclick="fetchAndMergeTables()" class="btn btn-primary">Fetch Data</button>
 
     <div id="filtered-results" class="mt-4">
@@ -169,6 +176,7 @@
 
 </body>
 </html>
+
 
 
 
