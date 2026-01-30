@@ -31,6 +31,8 @@
 <body class="container mt-4">
 
     <h2>Filtered & Sorted Table</h2>
+    <button onclick="fetchAndMergeTables()" class="btn btn-primary">Fetch Data</button>
+
     <div class="mb-3">
         <label for="searchInput" class="form-label">Search in table:</label>
         <div class="input-group">
@@ -38,8 +40,6 @@
             <button class="btn btn-outline-secondary" type="button" id="clearSearch">Clear</button>
         </div>
     </div>
-    <button onclick="fetchAndMergeTables()" class="btn btn-primary">Fetch Data</button>
-
     <div id="filtered-results" class="mt-4">
         <p>Click "Fetch Data" to load results.</p>
     </div>
@@ -176,6 +176,7 @@
 
 </body>
 </html>
+
 
 
 
