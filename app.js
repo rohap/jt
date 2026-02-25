@@ -1,3 +1,11 @@
+
+// Constants: Two URLs to fetch data from
+const urls = [
+    "https://contaste.pro/eng/9938?schedule&part=156172", // Replace with actual URL 1
+    //"https://contaste.pro/eng/85724?schedule&part=109606"  // Replace with actual URL 2
+];
+
+
 var removeAttr = jQuery.fn.removeAttr;
 jQuery.fn.removeAttr = function() {
     if (!arguments.length) {
@@ -12,11 +20,6 @@ jQuery.fn.removeAttr = function() {
     return removeAttr.apply(this, arguments);
 };
 
-// Constants: Two URLs to fetch data from
-const urls = [
-    "https://contaste.pro/eng/9938?schedule&part=156172", // Replace with actual URL 1
-    //"https://contaste.pro/eng/85724?schedule&part=109606"  // Replace with actual URL 2
-];
 const searchTerm = "Vision";
 
 async function fetchAndMergeTables() {
